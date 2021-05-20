@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/Tike-Myson/kfc/pkg/models"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"runtime/debug"
 	"sort"
-	"github.com"
 )
 
 var filename = "scoreboard.json"
