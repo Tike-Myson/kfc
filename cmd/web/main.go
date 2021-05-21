@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -18,8 +22,15 @@ type application struct {
 	infoLog *log.Logger
 }
 
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "nurtilek"
+	password = "nm2000kz"
+	dbname   = "postgis_db"
+)
 
-// @title Swagger Example API
+// @title KFC Example API
 // @version 1.0
 // @description This is a sample server Petstore server.
 // @termsOfService http://swagger.io/terms/
@@ -35,6 +46,23 @@ type application struct {
 // @BasePath /v2
 
 func main() {
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successfully connected!")
+
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
 
@@ -53,6 +81,6 @@ func main() {
 	}
 
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }

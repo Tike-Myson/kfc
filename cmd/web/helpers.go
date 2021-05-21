@@ -11,7 +11,7 @@ import (
 	"sort"
 )
 
-var filename = "scoreboard.json"
+var filename = "geo.json"
 
 func readJsonFile() []byte {
 	_, err := os.Stat(filename)
@@ -28,6 +28,7 @@ func readJsonFile() []byte {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	fmt.Println(string(content))
 	return content
 }
 

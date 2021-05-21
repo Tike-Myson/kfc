@@ -2,18 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	geojson "github.com/paulmach/go.geojson"
 	"net/http"
-	"github.com/Tike-Myson/kfc/pkg/models"
 )
 
 func (app *application) returnScoreboard(w http.ResponseWriter, r *http.Request){
 	content := readJsonFile()
-	json.Unmarshal(content, &models.Scoreboard)
+	fc2 := geojson.NewFeatureCollection()
+	json.Unmarshal(content, fc2)
 	sortData()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Origin")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Accept", "application/json")
-	json.NewEncoder(w).Encode(models.Scoreboard)
+	json.NewEncoder(w).Encode(fc2)
 }
