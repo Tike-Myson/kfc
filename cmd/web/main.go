@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/Tike-Myson/kfc/pkg/models/postgresql"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
-
-	_ "github.com/lib/pq"
 )
 
 var (
@@ -20,6 +20,11 @@ var (
 type application struct {
 	errorLog *log.Logger
 	infoLog *log.Logger
+	//geometries interface{
+	//	Insert(string, string) error
+	//	Get() (*models.Geometries, error)
+	//	Search()
+	//}
 }
 
 const (
@@ -64,6 +69,8 @@ func main() {
 		Handler:  app.routes(),
 	}
 
+
+
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -77,31 +84,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	str := "{\"type\": \"Point\", \"coordinates\": [13.42493130000003, 52.50074619999999 ]}"
-	fmt.Println(str)
-	insertDynStmt := `INSERT INTO "geometries"("name", "geom") values($1, ST_AsText(ST_GeomFromGeoJSON($2)))`
-	_, err = db.Exec(insertDynStmt, "Helloio", str)
-	if err != nil {
-		errorLog.Println(err)
-	}
 
-	rows, err := db.Query(`SELECT "name", ST_AsGeoJSON("geom") FROM "geometries"`)
-	if err != nil {
-		errorLog.Println(err)
-	}
-	defer rows.Close()
+	var g postgresql.GeojsonModel
+	g.DB = db
 
-	for rows.Next() {
-		var name string
-		var geom string
-
-		err = rows.Scan(&name, &geom)
-		if err != nil {
-			errorLog.Println(err)
-		}
-
-		fmt.Println(name, geom)
-	}
+	g.Get()
 
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
 	err = srv.ListenAndServe()

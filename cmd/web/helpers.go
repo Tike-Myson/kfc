@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/Tike-Myson/kfc/pkg/models"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"runtime/debug"
-	"sort"
 )
 
 var filename = "geo.json"
@@ -36,12 +34,6 @@ func writeJsonToFile(data []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func sortData() {
-	sort.SliceStable(models.Scoreboard, func(i, j int) bool {
-		return models.Scoreboard[i].Score > models.Scoreboard[j].Score
-	})
 }
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
