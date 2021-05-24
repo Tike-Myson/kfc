@@ -47,22 +47,6 @@ const (
 
 func main() {
 
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Successfully connected!")
-
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
 
@@ -78,6 +62,38 @@ func main() {
 		Addr:     *addr,
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
+	}
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	rows, err := db.Query(`SELECT "name", ST_AsText("geom") FROM "geometries"`)
+	if err != nil {
+		errorLog.Println(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+		var geom string
+
+		err = rows.Scan(&name, &geom)
+		if err != nil {
+			errorLog.Println(err)
+		}
+
+		fmt.Println(name, geom)
 	}
 
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
