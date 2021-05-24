@@ -78,7 +78,37 @@ func main() {
 		panic(err)
 	}
 
-	rows, err := db.Query(`SELECT "name", ST_AsText("geom") FROM "geometries"`)
+	insertDynStmt := `INSERT INTO "geometries"("name", "geom") values('James', ST_AsText(ST_GeomFromGeoJSON('{"type": "Polygon",
+        "coordinates": [
+          [
+            [
+              61.557769775390625,
+              46.13036330589106
+            ],
+            [
+              61.958770751953125,
+              46.13036330589106
+            ],
+            [
+              61.958770751953125,
+              46.28052949433555
+            ],
+            [
+              61.557769775390625,
+              46.28052949433555
+            ],
+            [
+              61.557769775390625,
+              46.13036330589106
+            ]
+          ]
+        ]}')))`
+	_, err = db.Exec(insertDynStmt)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
+	rows, err := db.Query(`SELECT "name", ST_AsGeoJSON("geom") FROM "geometries"`)
 	if err != nil {
 		errorLog.Println(err)
 	}

@@ -28,7 +28,6 @@ func readJsonFile() []byte {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Println(string(content))
 	return content
 }
 
