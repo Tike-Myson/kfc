@@ -4,7 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 )
+
+var filename = "geo.json"
 
 type GeojsonModel struct {
 	DB *sql.DB
@@ -36,6 +40,7 @@ func (m *GeojsonModel) Get() (map[string]string, error) {
 			return nil, err
 		}
 		byt := []byte(geom)
+		//writeJsonToFile(byt)
 		var dat map[string]interface{}
 		if err := json.Unmarshal(byt, &dat); err != nil {
 			panic(err)
@@ -45,6 +50,13 @@ func (m *GeojsonModel) Get() (map[string]string, error) {
 		result[name] = geom
 	}
 	return result, nil
+}
+
+func writeJsonToFile(data []byte) {
+	err := ioutil.WriteFile(filename, data, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (m *GeojsonModel) Search() {

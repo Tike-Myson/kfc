@@ -8,7 +8,10 @@ import (
 
 func (app *application) returnScoreboard(w http.ResponseWriter, r *http.Request){
 	content := readJsonFile()
-	fc2 := geojson.NewFeatureCollection()
+	fc2, err := geojson.UnmarshalGeometry(content)
+	if err != nil {
+		app.serverError(w, err)
+	}
 	json.Unmarshal(content, fc2)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Origin")
