@@ -87,10 +87,10 @@ func main() {
 
 	var g postgresql.GeojsonModel
 	g.DB = db
-	err = g.Insert(string(readJsonFile()))
-	if err != nil {
-		errorLog.Panicln(err)
-	}
+	//err = g.Insert(string(readJsonFile()))
+	//if err != nil {
+	//	errorLog.Panicln(err)
+	//}
 	err = g.Get()
 	if err != nil {
 		errorLog.Panicln(err)

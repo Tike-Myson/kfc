@@ -9,9 +9,7 @@ import (
 	"runtime/debug"
 )
 
-var filename = "geo.json"
-
-func parseJson
+var filename = "test.json"
 
 func readJsonFile() []byte {
 	_, err := os.Stat(filename)

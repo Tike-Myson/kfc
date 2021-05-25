@@ -30,15 +30,15 @@ func (m *GeojsonModel) Get() error {
 	defer rows.Close()
 
 	for rows.Next() {
-		var name string
+		var id string
 		//var geom *geojson.Geometry
 		var geom string
 
-		err = rows.Scan(&name, &geom)
+		err = rows.Scan(&id, &geom)
 		if err != nil {
 			return err
 		}
-		fmt.Println(name, geom)
+		fmt.Println(id, geom)
 	}
 	return nil
 }

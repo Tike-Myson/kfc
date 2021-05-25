@@ -2,18 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Tike-Myson/kfc/pkg/models"
-	geojson "github.com/paulmach/go.geojson"
 	"net/http"
 )
 
 func (app *application) returnAPI(w http.ResponseWriter, r *http.Request){
 	content := readJsonFile()
-	fc2, _ := geojson.UnmarshalGeometry(content)
-	var test models.Geometries
-	json.Unmarshal(content, test)
-	fmt.Println(test)
+	fc2:= models.NewFeatureCollection()
+	json.Unmarshal(content, fc2)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Origin")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
