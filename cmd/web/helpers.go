@@ -11,6 +11,8 @@ import (
 
 var filename = "geo.json"
 
+func parseJson
+
 func readJsonFile() []byte {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {

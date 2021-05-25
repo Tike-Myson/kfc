@@ -10,7 +10,7 @@ import (
 func (app *application) routes() http.Handler {
 
 	mux := mux.NewRouter().StrictSlash(true)
-	mux.HandleFunc("/", app.returnScoreboard).Methods("GET")
+	mux.HandleFunc("/", app.returnAPI).Methods("GET")
 	mux.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 	return secureHeaders(app.recoverPanic(app.logRequest(mux)))
 }

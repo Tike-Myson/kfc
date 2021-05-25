@@ -1,11 +1,8 @@
 package models
 
-type Geometries struct {
-	Name string `json:"name"`
-	Geometry Geometry `json:"geom"`
-}
+import geojson "github.com/paulmach/go.geojson"
 
-type Geometry struct {
-	Type string `json:"type"`
-	Geo string    `json:"coordinates"`
+type Geometries struct {
+	id int `json:"id"`
+	Geometry *geojson.Geometry `json:"geometry"`
 }
