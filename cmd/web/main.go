@@ -91,7 +91,15 @@ func main() {
 	//if err != nil {
 	//	errorLog.Panicln(err)
 	//}
-	err = g.Get()
+	fc1, err := g.Get()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+	for _, v := range fc1.Features {
+		id := fmt.Sprintf("%v", v.ID)
+		geom := v.Geometry
+		writeJsonToFile(id, geom)
+	}
 	if err != nil {
 		errorLog.Panicln(err)
 	}

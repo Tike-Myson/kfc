@@ -4,7 +4,6 @@ import geojson "github.com/paulmach/go.geojson"
 
 type Feature struct {
 	ID          interface{}            `json:"id,omitempty"`
-	BoundingBox []float64              `json:"bbox,omitempty"`
 	Geometry    *geojson.Geometry      `json:"geometry"`
 	CRS         map[string]interface{} `json:"crs,omitempty"` // Coordinate Reference System Objects are not currently supported
 }

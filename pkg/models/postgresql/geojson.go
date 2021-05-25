@@ -2,9 +2,8 @@ package postgresql
 
 import (
 	"database/sql"
-	"fmt"
-	"io/ioutil"
-	"log"
+	"github.com/Tike-Myson/kfc/pkg/models"
+	geojson "github.com/paulmach/go.geojson"
 )
 
 var filename = "geo.json"
@@ -22,32 +21,29 @@ func (m *GeojsonModel) Insert(geom string) error {
 	return nil
 }
 
-func (m *GeojsonModel) Get() error {
+func (m *GeojsonModel) Get() (*models.FeatureCollection, error) {
+	fc1 := models.NewFeatureCollection()
+
 	rows, err := m.DB.Query(`SELECT "id", ST_AsGeoJSON("geom") FROM "geometries"`)
 	if err != nil {
-		return err
+		return fc1, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var id string
-		//var geom *geojson.Geometry
-		var geom string
+		var geom *geojson.Geometry
 
 		err = rows.Scan(&id, &geom)
 		if err != nil {
-			return err
+			return fc1, err
 		}
-		fmt.Println(id, geom)
+		var fc2 *models.Feature
+		fc2.ID = id
+		fc2.Geometry = geom
+		fc1.Features = append(fc1.Features, fc2)
 	}
-	return nil
-}
-
-func writeJsonToFile(data []byte) {
-	err := ioutil.WriteFile(filename, data, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return fc1, nil
 }
 
 func (m *GeojsonModel) Search() {

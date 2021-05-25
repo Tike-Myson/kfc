@@ -11,6 +11,7 @@ func (app *application) routes() http.Handler {
 
 	mux := mux.NewRouter().StrictSlash(true)
 	mux.HandleFunc("/", app.returnAPI).Methods("GET")
+	mux.HandleFunc("/{id}", app.returnSingleAPI).Methods("GET")
 	mux.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 	return secureHeaders(app.recoverPanic(app.logRequest(mux)))
 }
