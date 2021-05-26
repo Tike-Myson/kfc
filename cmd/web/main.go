@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/Tike-Myson/kfc/pkg/models"
 	"github.com/Tike-Myson/kfc/pkg/models/postgresql"
 	_ "github.com/lib/pq"
 	"log"
@@ -20,11 +21,10 @@ var (
 type application struct {
 	errorLog *log.Logger
 	infoLog *log.Logger
-	//geometries interface{
-	//	Insert(string, string) error
-	//	Get() (*models.Geometries, error)
-	//	Search()
-	//}
+	geometries interface{
+		Insert(string) error
+		Get() (*models.FeatureCollection, error)
+	}
 }
 
 const (
@@ -58,19 +58,6 @@ func main() {
 	infoLog := log.New(os.Stdout, Green+"INFO\t"+Reset, log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, Red+"ERROR\t"+Reset, log.Ldate|log.Ltime|log.Lshortfile)
 
-	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-	}
-
-	srv := &http.Server{
-		Addr:     *addr,
-		ErrorLog: errorLog,
-		Handler:  app.routes(),
-	}
-
-
-
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -85,24 +72,19 @@ func main() {
 		panic(err)
 	}
 
-	var g postgresql.GeojsonModel
-	g.DB = db
-	//err = g.Insert(string(readJsonFile()))
-	//if err != nil {
-	//	errorLog.Panicln(err)
-	//}
-	fc1, err := g.Get()
-	if err != nil {
-		errorLog.Fatal(err)
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+		geometries: &postgresql.GeojsonModel{DB: db},
 	}
-	for _, v := range fc1.Features {
-		id := fmt.Sprintf("%v", v.ID)
-		geom := v.Geometry
-		writeJsonToFile(id, geom)
+
+	srv := &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  app.routes(),
 	}
-	if err != nil {
-		errorLog.Panicln(err)
-	}
+
+
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)

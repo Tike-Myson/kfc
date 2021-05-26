@@ -20,3 +20,15 @@ func NewFeatureCollection() *FeatureCollection {
 		Features: make([]*Feature, 0),
 	}
 }
+
+func NewFeature(geometry *geojson.Geometry) *Feature {
+	return &Feature{
+		ID:       "",
+		Geometry:   geometry,
+	}
+}
+
+func (fc *FeatureCollection) AddFeature(feature *Feature) *FeatureCollection {
+	fc.Features = append(fc.Features, feature)
+	return fc
+}

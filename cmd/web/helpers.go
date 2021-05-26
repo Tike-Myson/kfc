@@ -12,7 +12,7 @@ import (
 	"runtime/debug"
 )
 
-var filename = "test.json"
+var filename = "geo.json"
 
 func readJsonFile() []byte {
 	_, err := os.Stat(filename)
@@ -32,17 +32,16 @@ func readJsonFile() []byte {
 	return content
 }
 
-func writeJsonToFile(id string, geom *geojson.Geometry) error {
+func writeJsonToFile(id int, geom *geojson.Geometry) error {
 	content := readJsonFile()
 	fc1 := models.NewFeatureCollection()
 	err := json.Unmarshal(content, fc1)
 	if err != nil {
 		return err
 	}
-	var fc2 *models.Feature
+	fc2 := models.NewFeature(geom)
 	fc2.ID = id
-	fc2.Geometry = geom
-	fc1.Features = append(fc1.Features, fc2)
+	fc1.AddFeature(fc2)
 	data, err := json.Marshal(fc1)
 	if err != nil {
 		return err
@@ -67,4 +66,20 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 
 func (app *application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
+}
+
+func sanitizeGeomJson(body []byte) string {
+	str := ""
+	for _, v := range body {
+		r := []rune(string(v))
+		for _, k := range r {
+			if k != ' ' && k != 10 {
+				str += string(k)
+			}
+		}
+	}
+	runeArr := []rune(str)
+	runeArr = runeArr[12:48]
+	str = string(runeArr)
+	return str
 }

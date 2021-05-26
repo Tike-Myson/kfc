@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"github.com/Tike-Myson/kfc/pkg/models"
 	geojson "github.com/paulmach/go.geojson"
+	//"github.com/Tike-Myson/kfc/pkg/models"
+	//geojson "github.com/paulmach/go.geojson"
 )
 
 var filename = "geo.json"
@@ -22,28 +24,25 @@ func (m *GeojsonModel) Insert(geom string) error {
 }
 
 func (m *GeojsonModel) Get() (*models.FeatureCollection, error) {
-	fc1 := models.NewFeatureCollection()
-
+	fc := models.NewFeatureCollection()
 	rows, err := m.DB.Query(`SELECT "id", ST_AsGeoJSON("geom") FROM "geometries"`)
 	if err != nil {
-		return fc1, err
+		return fc, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var id string
+		var id int
 		var geom *geojson.Geometry
-
 		err = rows.Scan(&id, &geom)
 		if err != nil {
-			return fc1, err
+			return fc, err
 		}
-		var fc2 *models.Feature
-		fc2.ID = id
-		fc2.Geometry = geom
-		fc1.Features = append(fc1.Features, fc2)
+		f := models.NewFeature(geom)
+		f.ID = id
+		fc.AddFeature(f)
 	}
-	return fc1, nil
+	return fc, nil
 }
 
 func (m *GeojsonModel) Search() {
