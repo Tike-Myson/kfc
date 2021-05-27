@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"github.com/Tike-Myson/kfc/pkg/models"
 	"github.com/Tike-Myson/kfc/pkg/models/postgresql"
 	_ "github.com/lib/pq"
+	geojson "github.com/paulmach/go.geojson"
 	"log"
 	"net/http"
 	"os"
@@ -22,8 +22,8 @@ type application struct {
 	errorLog *log.Logger
 	infoLog *log.Logger
 	geometries interface{
-		Insert(string) error
-		Get() (*models.FeatureCollection, error)
+		Insert(*geojson.FeatureCollection) error
+		Get() (*geojson.FeatureCollection, error)
 	}
 }
 
