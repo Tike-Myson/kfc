@@ -9,11 +9,11 @@ import (
 )
 
 func (app *application) returnAPI(w http.ResponseWriter, r *http.Request){
-	fc, err := app.geometries.Get()
-	if err != nil {
-		app.serverError(w, err)
-	}
-	writeJson(fc)
+	//fc, err := app.geometries.Get()
+	//if err != nil {
+	//	app.serverError(w, err)
+	//}
+	//writeJson(fc)
 	content := readJsonFile()
 	fc2:= geojson.NewFeatureCollection()
 	json.Unmarshal(content, fc2)
@@ -53,6 +53,10 @@ func (app *application) API(w http.ResponseWriter, r *http.Request){
 		app.serverError(w, err)
 	}
 	fmt.Fprintf(w, "%v", fc)
-	app.geometries.Insert(fc)
+	fcResult, err := app.geometries.Search(fc)
+	if err != nil {
+		app.serverError(w, err)
+	}
+	writeJson(fcResult)
 }
 

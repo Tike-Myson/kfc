@@ -7,8 +7,6 @@ import (
 	geojson "github.com/paulmach/go.geojson"
 )
 
-var filename = "geo.json"
-
 type GeojsonModel struct {
 	DB *sql.DB
 }
@@ -19,7 +17,6 @@ func (m *GeojsonModel) Insert(fc *geojson.FeatureCollection) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println(string(e))
 		insertStmt := `INSERT INTO "geometries"("id", "geom") values (nextval('geo_sequence'), ST_AsText(ST_GeomFromGeoJSON($1)))`
 		_, err = m.DB.Exec(insertStmt, string(e))
 		if err != nil {
@@ -51,6 +48,31 @@ func (m *GeojsonModel) Get() (*geojson.FeatureCollection, error) {
 	return fc, nil
 }
 
-func (m *GeojsonModel) Search() {
+func (m *GeojsonModel) Search(fc *geojson.FeatureCollection) (*geojson.FeatureCollection, error){
+	fcResult := geojson.NewFeatureCollection()
+	fmt.Println(fc)
+	for _, v := range fc.Features {
+		e, err := json.Marshal(v.Geometry)
+		if err != nil {
+			fmt.Println(string(e))
+			rows, err := m.DB.Query(`SELECT "id", ST_AsGeoJSON("geom") FROM geometries WHERE ST_Intersects(geom, $1)`, string(e))
+			if err != nil {
+				return nil, err
+			}
+			defer rows.Close()
 
+			for rows.Next() {
+				var id int
+				var geom *geojson.Geometry
+				err = rows.Scan(&id, &geom)
+				if err != nil {
+					return nil, err
+				}
+				f := geojson.NewFeature(geom)
+				f.ID = id
+				fcResult = fcResult.AddFeature(f)
+			}
+		}
+	}
+	return fcResult, nil
 }
