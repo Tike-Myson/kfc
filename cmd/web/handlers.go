@@ -3,19 +3,25 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alecthomas/template"
 	_ "github.com/aws/aws-lambda-go/events"
 	"github.com/gorilla/mux"
 	geojson "github.com/paulmach/go.geojson"
 	"net/http"
 )
 
-func (app *application) returnAPI(w http.ResponseWriter, r *http.Request){
-	//fc, err := app.geometries.Get()
-	//if err != nil {
-	//	app.serverError(w, err)
-	//}
-	//writeJson(fc)
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./ui/html/index.html")
+	if err != nil {
+		app.serverError(w, err)
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		app.serverError(w, err)
+	}
+}
 
+func (app *application) returnAPI(w http.ResponseWriter, r *http.Request){
 	content := readJsonFile()
 	fc2:= geojson.NewFeatureCollection()
 	json.Unmarshal(content, fc2)
