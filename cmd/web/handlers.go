@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	_ "github.com/aws/aws-lambda-go/events"
 	"github.com/gorilla/mux"
 	geojson "github.com/paulmach/go.geojson"
 	"net/http"
@@ -14,6 +15,7 @@ func (app *application) returnAPI(w http.ResponseWriter, r *http.Request){
 	//	app.serverError(w, err)
 	//}
 	//writeJson(fc)
+
 	content := readJsonFile()
 	fc2:= geojson.NewFeatureCollection()
 	json.Unmarshal(content, fc2)
@@ -53,10 +55,9 @@ func (app *application) API(w http.ResponseWriter, r *http.Request){
 		app.serverError(w, err)
 	}
 	fmt.Fprintf(w, "%v", fc)
-	fcResult, err := app.geometries.Search(fc)
+	fcResult, err := app.geometries.SmartSearch(fc)
 	if err != nil {
 		app.serverError(w, err)
 	}
 	writeJson(fcResult)
 }
-

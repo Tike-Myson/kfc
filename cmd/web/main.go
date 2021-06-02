@@ -25,6 +25,7 @@ type application struct {
 		Insert(*geojson.FeatureCollection) error
 		Get() (*geojson.FeatureCollection, error)
 		Search(*geojson.FeatureCollection) (*geojson.FeatureCollection, error)
+		SmartSearch(*geojson.FeatureCollection) (*geojson.FeatureCollection, error)
 	}
 }
 
