@@ -82,7 +82,7 @@ func (m *GeojsonModel) SmartSearch(fc *geojson.FeatureCollection) (*geojson.Feat
 		if err != nil {
 			return nil, err
 		}
-		rows, err := m.DB.Query(`SELECT "id", ST_AsGeoJSON("geom"), ST_Area(ST_AsGeoJSON(ST_Intersection(geom, $1))) * 0.3048 ^ 2 sqm FROM geometries WHERE ST_Intersects(geom, $1) Order by sqm asc limit 100`, string(e))
+		rows, err := m.DB.Query(`SELECT "id", ST_AsGeoJSON("geom"), ST_Area(ST_AsGeoJSON(ST_Intersection(geom, $1))) * 0.3048 ^ 2 sqm FROM geometries WHERE ST_Intersects(geom, $1) Order by sqm asc`, string(e))
 		if err != nil {
 			return nil, err
 		}
@@ -103,3 +103,7 @@ func (m *GeojsonModel) SmartSearch(fc *geojson.FeatureCollection) (*geojson.Feat
 	}
 	return fcResult, nil
 }
+
+//func (m *GeojsonModel) LimitSearch(fc *geojson.FeatureCollection) error {
+//
+//}

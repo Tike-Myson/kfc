@@ -66,4 +66,5 @@ func (app *application) API(w http.ResponseWriter, r *http.Request){
 		app.serverError(w, err)
 	}
 	writeJson(fcResult)
+
 }
